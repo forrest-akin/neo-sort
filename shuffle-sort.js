@@ -26,7 +26,7 @@ var Playlist = function() {
 
 // main shuffle-sort function
 var shufflePlaylist = function(playlist) {
-	// map song.artist to first artist listed on song
+	// map first artist listed in song.artist to _trackArtist
 	playlist = playlist.map(function(song) {
 		return {
 			name: song.name, 
