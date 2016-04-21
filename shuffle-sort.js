@@ -26,18 +26,29 @@ var Playlist = function() {
 
 // main shuffle-sort function
 var shufflePlaylist = function(playlist) {
-	// fill array with {artist, songCount} tuples
+	// map song.artist to first artist listed on song
+	playlist = playlist.map(function(song) {
+		return {
+			name: song.name, 
+			artist: song.artist,
+			album: song.album,
+			uri: song.uri,
+			_trackArtist: ~song.artist.indexOf(',') ? song.artist.substr(0, song.artist.indexOf(',')) : song.artist,
+		};
+	});
+	
+	// fill new array with {artist, songCount} tuples
 	var artistSongCount = [];
 	playlist.reduce(function(acc, song) {
-		if(!~acc.indexOf(song.artist)) {
-			acc.push(song.artist);
+		var artist = song._trackArtist;
+		if(!~acc.indexOf(artist)) {
+			acc.push(artist);
 			artistSongCount.push({
-				artist: song.artist,
+				artist: artist,
 				count: playlist.filter(function(_song) {
-					return _song.artist === song.artist
+					return _song._trackArtist === artist;
 				}).reduce(function(_acc, _song) {
-					_acc++;
-					return _acc;
+					return ++_acc;
 				}, 0)
 			});
 		}
@@ -63,7 +74,7 @@ var shufflePlaylist = function(playlist) {
 	artistSongCount.forEach(function(item) {
 		// filter playlist by current artist
 		artistSongs = playlist.filter(function(song) {
-			return item.artist === song.artist;
+			return item.artist === song._trackArtist;
 		});
 
 		// randomize order of songs
